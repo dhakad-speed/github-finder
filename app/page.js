@@ -115,14 +115,14 @@ export default function Home() {
                 <Card key={user.id}>
                   <CardContent className="flex items-center gap-4 p-4 w-100">
                     <img
-                      src={user.avatar_url}
-                      alt={user.login}
+                      src={user?.avatar_url}
+                      alt={user?.login}
                       className="w-16 h-16 rounded-full"
                     />
                     <div>
-                      <h2 className="text-lg font-semibold">{user.login}</h2>
+                      <h2 className="text-lg font-semibold">{user?.login}</h2>
                       <a
-                        href={user.html_url}
+                        href={user?.html_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
