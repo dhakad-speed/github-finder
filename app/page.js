@@ -123,7 +123,7 @@ export default function Home() {
                       <h2 className="text-lg font-semibold">{user.login}</h2>
                       <a
                         href={user.html_url}
-                        target="_self"
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
                       >
