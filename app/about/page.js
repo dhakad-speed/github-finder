@@ -18,7 +18,7 @@ function About() {
       </h3>
       <h3 className="text-lg text-[#9ca3af]">
         Designed By:{" "}
-        <span className="font-semibold text-[#eee]">Karan Dhakad</span>
+        <span className="font-semibold text-[#eee] ml-2">Karan Dhakad</span>
       </h3>
     </div>
   );
