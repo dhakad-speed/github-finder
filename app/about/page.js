@@ -16,9 +16,9 @@ function About() {
       <h3 className="text-xl mb-2 text-[#a6adbb]">
         A React app to search GitHub profiles and see profile details.
       </h3>
-      <h3 className="text-lg text-[#9ca3af]">
+      <h3 className="text-lg text-[#9ca3af] ml-2">
         Designed By:{" "}
-        <span className="font-semibold text-[#eee] ml-2">Karan Dhakad</span>
+        <span className="font-semibold text-[#eee] ">Karan Dhakad</span>
       </h3>
     </div>
   );
