@@ -1,44 +1,48 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { Input, Button, Card, CardContent, Skeleton, Box } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  Skeleton,
+  Box,
+  Autocomplete,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
 import axios from "axios";
 export default function Home() {
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // displayed user cards
+  const [options, setOptions] = useState([]); // autocomplete suggestions
   const [query, setQuery] = useState("");
 
   const [error, setError] = useState(null);
 
-  const handleUsers = async (userQuery) => {
+  const handleOptions = async (userQuery) => {
     if (!userQuery.trim()) return;
-    setLoading(true);
     setError(null);
     try {
-      const { data } = await axios.get(
-        `https://api.github.com/search/users?q=${encodeURIComponent(
-          userQuery
-        )}`,
-        {
-          headers: {
-            Authorization: process.env.GITHUB_TOKEN,
-          },
-        }
-      );
-      setUsers(data?.items ?? []);
+      const { data } = await axios.get(`/api/github-users`, {
+        params: { q: userQuery },
+      });
+      const items = data?.items ?? [];
+      setOptions(items);
+      setUsers(items);
     } catch (error) {
       setError(error.message);
-    } finally {
-      setLoading(false);
     }
   };
   useEffect(() => {
     if (!query.trim()) {
+      setOptions([]);
       setUsers([]);
+      return;
     }
     const handler = setTimeout(() => {
-      handleUsers(query);
-    }, 1500);
+      handleOptions(query);
+    }, 500);
     return () => {
       clearTimeout(handler);
     };
@@ -59,25 +63,111 @@ export default function Home() {
             alignItems: "center",
             padding: { xs: "10px 14px", sm: "8px 12px" },
             borderRadius: "8px",
-            background: "#e5e7eb",
+            background: "transparent",
           }}
         >
-          <SearchIcon
-            sx={{
-              fontSize: { xs: 22, sm: 26, md: 30, lg: 32 },
-              color: "black",
+          <Autocomplete
+            freeSolo
+            options={options}
+            getOptionLabel={(option) =>
+              typeof option === "string" ? option : option?.login ?? ""
+            }
+            inputValue={query}
+            onInputChange={(event, newInputValue) => setQuery(newInputValue)}
+            onChange={(event, newValue) => {
+              if (typeof newValue === "string") {
+                setQuery(newValue);
+                // when manual string submitted, do not change cards yet
+              } else if (newValue && newValue.login) {
+                setQuery(newValue.login);
+                // show the selected user card(s)
+                setUsers([newValue]);
+              }
             }}
-          />
-          <Input
-            onChange={(e) => setQuery(e.target.value)}
-            value={query}
-            placeholder="Search User"
             sx={{
-              padding: { xs: "8px 8px", sm: "8px 12px" },
               width: "100%",
               fontSize: { xs: 14, sm: 16, md: 18 },
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: "#ffffff",
+                borderRadius: "8px",
+                outline: "none",
+                boxShadow: "none",
+              },
+              "& .MuiOutlinedInput-root:focus-within": {
+                outline: "none",
+                boxShadow: "none",
+              },
+              "& .MuiOutlinedInput-root.Mui-focused": {
+                outline: "none",
+                boxShadow: "none",
+              },
+              // ensure no sticky bottom border from any pseudo elements
+              "& .MuiOutlinedInput-root:before": {
+                borderBottom: "0 !important",
+              },
+              "& .MuiOutlinedInput-root:after": {
+                borderBottom: "0 !important",
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "0 !important",
+              },
+              "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                {
+                  border: "0 !important",
+                },
+              "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                {
+                  border: "0 !important",
+                },
+              "& .MuiOutlinedInput-input": {
+                padding: "6px 16px",
+              },
+              // In case variant changes or defaults apply, also neutralize underline style
+              "& .MuiInput-underline:before": {
+                borderBottom: "0 !important",
+              },
+              "& .MuiInput-underline:after": {
+                borderBottom: "0 !important",
+              },
             }}
-            disableUnderline
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Search User"
+                variant="outlined"
+                size="small"
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: "#6b7280" }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{}}
+              />
+            )}
+            slotProps={{
+              paper: {
+                sx: {
+                  borderRadius: "8px",
+                  backgroundColor: "#ffffff",
+                  border: 0,
+                  mt: 0,
+                  boxShadow:
+                    "0px 1px 2px rgba(0,0,0,0.06), 0px 1px 3px rgba(0,0,0,0.1)",
+                },
+              },
+              listbox: {
+                sx: {
+                  padding: "4px 0",
+                  "& .MuiAutocomplete-option": {
+                    padding: "6px 16px",
+                    fontSize: { xs: 14, sm: 16, md: 18 },
+                  },
+                },
+              },
+            }}
           />
         </Box>
         {/* <Button
